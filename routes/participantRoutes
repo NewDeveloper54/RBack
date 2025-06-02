@@ -1,0 +1,53 @@
+const express = require("express");
+const Participant = require("../models/Participant");
+
+const router = express.Router();
+
+// recevoir les participants
+router.get("/", async (req, res) => {
+  try {
+    const participants = await Participant.find();
+    res.json(participants);
+  } catch (error) {
+    console.log("il y a eu une erreur lors du chargement :" + error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
+// ajouter des participants
+router.post("/", async (req, res) => {
+  try {
+    const { nom, prenom, email, gain } = req.body;
+    const nouveauParticipant = new Participant({ nom, prenom, email, gain });
+
+    await nouveauParticipant.save();
+    res.status(201).json(nouveauParticipant);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de l'ajout du participant" });
+  }
+});
+
+//   mettre à jour le gain d’un participant via l’email
+router.put("/:email", async (req, res) => {
+  const { email } = req.params;
+  const { gain } = req.body;
+
+  try {
+    const participant = await Participant.findOneAndUpdate(
+      { email },
+      { gain },
+      { new: true } // Renvoie le document mis à jour
+    );
+
+    if (!participant) {
+      return res.status(404).json({ message: "Participant non trouvé" });
+    }
+
+    res.json(participant);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour :", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
+module.exports = router;
