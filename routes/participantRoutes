@@ -16,9 +16,13 @@ router.get("/", async (req, res) => {
 
 // ajouter des participants
 router.post("/", async (req, res) => {
+      console.log("BODY REÇU :", req.body); // Ajoute ça
+
+
   try {
-    const { nom, prenom, email, gain } = req.body;
-    const nouveauParticipant = new Participant({ nom, prenom, email, gain });
+
+    const { nom, prenom, email, telephone, gain } = req.body;
+    const nouveauParticipant = new Participant({ nom, prenom, email,telephone, gain });
 
     await nouveauParticipant.save();
     res.status(201).json(nouveauParticipant);
@@ -26,6 +30,9 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Erreur lors de l'ajout du participant" });
   }
 });
+
+
+
 
 //   mettre à jour le gain d’un participant via l’email
 router.put("/:email", async (req, res) => {
@@ -51,3 +58,4 @@ router.put("/:email", async (req, res) => {
 });
 
 module.exports = router;
+
